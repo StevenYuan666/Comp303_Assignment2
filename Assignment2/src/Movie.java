@@ -1,93 +1,127 @@
-
-
 import java.io.File;
 import java.util.HashMap;
-import java.util.Map;
 
-/**
- * Represents a single movie, with at least a title, language, and publishing studio. Each movie is identified by its
- * path on the file system.
- */
-public class Movie {
-
-	private final File aPath;
-
-	private String aTitle;
-	private String aLanguage;
-	private String aStudio;
-
-	private Map<String, String> aTags = new HashMap<>();
-
-	/**
-	 * Creates a movie from the file path. Callers must also provide required metadata about the movie.
-	 *
-	 * @param pPath
-	 *            location of the movie on the file system.
-	 * @param pTitle
-	 *            official title of the movie in its original language
-	 * @param pLanguage
-	 *            language of the movie, in full text (e.g., "English")
-	 * @param pStudio
-	 *            studio which originally published the movie
-	 * @throws IllegalArgumentException
-	 *             if the path doesn't point to a file (e.g., it denotes a directory)
+public class Movie{
+	
+	final private String path;
+	final private Formats format;
+	private Status status;
+	
+	final private String title;
+	final private String language;
+	final private String studio;
+	/*
+	 * Use HashMap to store the key-value pairs
+	 * Choose the type String, since String is general enough to store any information
+	 * like name, length, or anything related to the movie
 	 */
-	public Movie(File pPath, String pTitle, String pLanguage, String pStudio) {
-		if (pPath.exists() && !pPath.isFile()) {
-			throw new IllegalArgumentException("The path should point to a file.");
+	private HashMap<String, String> custom;
+	
+	public Movie(String inputPath, String inputTitle, String inputLanguage, String inputStudio) {
+		//check if the input file with acceptable formats
+		String inputFormat = inputPath.substring(inputPath.lastIndexOf(".") + 1);
+		switch (inputFormat.toUpperCase()) {
+			case "MP4":
+				this.format = Formats.MP4;
+				break;
+			case "MOV":
+				this.format = Formats.MOV;
+				break;
+			case "WMV":
+				this.format = Formats.WMV;
+				break;
+			case "AVI":
+				this.format = Formats.AVI;
+				break;
+			case "FLV":
+				this.format = Formats.FLV;
+				break;
+			case "MKV":
+				this.format = Formats.MKV;
+				break;
+			default:
+				//Raise an error if the format is not acceptable
+				throw new AssertionError("Error: Your input path is not matched with any acceptable path");
 		}
-		aPath = pPath; // ok because File is immutable.
-		aTitle = pTitle;
-		aLanguage = pLanguage;
-		aStudio = pStudio;
-	}
-
-	/**
-	 * Indicates whether this Movie object represents a valid movie that can be played.
-	 * 
-	 * @return true if the underlying video file exists and is a file (not a directory)
-	 */
-	public boolean isValid() {
-		return aPath.isFile();
-	}
-
-	public String getTitle() {
-		return aTitle;
-	}
-
-	public String getLanguage() {
-		return aLanguage;
-	}
-
-	public String getStudio() {
-		return aStudio;
-	}
-
-	/**
-	 * Sets the value of a custom tag.
-	 *
-	 * @param pKey
-	 *            the key used to retrieve the tag.
-	 * @param pValue
-	 *            the value of the tag to insert. Use null to remove the key.
-	 */
-	public void setTag(String pKey, String pValue) {
-		if (pValue == null) {
-			aTags.remove(pKey);
+		this.path = inputPath;
+		//check if the file exists or not
+		File f = new File(inputPath);
+		if(f.exists()) {
+			this.status = Status.Valid;
 		}
 		else {
-			aTags.put(pKey, pValue);
+			this.status = Status.Invalid;
+		}
+		//Initialize the info
+		this.title = inputTitle;
+		this.language = inputLanguage;
+		this.studio = inputStudio;
+		this.custom = new HashMap<String, String>();
+	}
+	
+	//to Deeply Copy a movie object
+	public Movie(Movie m) {
+		this.path = m.path;
+		this.format = m.format;
+		this.status = m.status;
+		this.title = m.title;
+		this.language = m.language;
+		this.studio = m.studio;
+		this.custom = new HashMap<String, String>(m.custom);
+	}
+	
+	//Easier for client to print out
+	public String toString() {
+		return this.title;
+	}
+	
+	//Update the status of the movie, to check if the file exists or not
+	public void updateStatus() {
+		File f = new File(this.path);
+		if(f.exists()) {
+			this.status = Status.Valid;
+		}
+		else {
+			this.status = Status.Invalid;
 		}
 	}
-
-	/**
-	 * Retrieves the value of a custom tag.
-	 *
-	 * @param pKey
-	 *            the tag key, as it was inserted
-	 * @return the associated value
+	
+	/*
+	 * Check if the two movies have same file, even though they are two object
+	 * Used in WatchList class and Library class
+	 * I assume that two Movies are same if they are refer to the same file
 	 */
-	public String getTag(String pKey) {
-		return aTags.get(pKey);
+	public boolean ifSame(Movie m) {
+		return this.path.equals(m.path);
 	}
+	
+	//Getters for the fields
+	public Status getValidity() {
+		return this.status;
+	}
+	public Formats getFormat() {
+		return this.format;
+	}
+	//Getters for the required information
+	public String getTitle() {
+		return this.title;
+	}
+	public String getLanguage() {
+		return this.language;
+	}
+	public String getStudio() {
+		return this.studio;
+	}
+	//Methods for modify the custom information
+	public void addPair(String key, String value) {
+		this.custom.put(key, value);
+	}
+	public void removePair(String key) {
+		this.custom.remove(key);
+	}
+	public void modifyPair(String key, String changed) {
+		this.custom.replace(key, changed);
+	}
+
+	
 }

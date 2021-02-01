@@ -1,107 +1,109 @@
-
-
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
 
-/**
- * Represents a sequence of movies to watch in FIFO order.
- */
-public class WatchList {
+public class WatchList{
+	private String name;
+	private LinkedList<Movie> watchList;
+	//to store the name has used, to avoid the duplicates
+	static private ArrayList<String> nameList = new ArrayList<String>();
 	
-	private final List<Movie> aList = new LinkedList<>();
-	private String aName;
-	
-	/**
-	 * Creates a new empty watchlist.
-	 * 
-	 * @param pName
-	 *            the name of the list
-	 */
-	public WatchList(String pName) {
-		aName = pName;
-	}
-	
-	public String getName() {
-		return aName;
-	}
-	
-	/**
-	 * Changes the name of this watchlist.
-	 * 
-	 * @param pName
-	 *            the new name
-	 */
-	public void setName(String pName) {
-		aName = pName;
-	}
-	
-	/**
-	 * Adds a movie at the end of this watchlist.
-	 * 
-	 * @param pMovie
-	 *            the movie to add
-	 */
-	public void addMovie(Movie pMovie) {
-		aList.add(pMovie);
-	}
-	
-	/**
-	 * Retrieves and removes the next movie to watch from this watchlist. Movies are retrieved in FIFO order.
-	 */
-	public Movie removeNext() {
-		return aList.remove(0);
-	}
-	
-	/**
-	 * Retrieves the list of movies (valid and invalid) in this watchlist.
-	 * 
-	 * @return an unmodifiable list of movies, backed by this watchlist
-	 */
-	public List<Movie> getMovies() {
-		return Collections.unmodifiableList(aList);
-	}
-	
-	/**
-	 * Counts and returns the number of valid movies in this watchlist.
-	 * 
-	 * @return the number of valid movies
-	 */
-	public int getNumberMovies() {
-		int count = 0;
-		for (Movie movie : aList) {
-			if (movie.isValid()) {
-				count++;
+	public WatchList(String inputName) {
+		//The watch list is identified by name, so the name cannot be same
+		for(String name : nameList) {
+			if(name.equals(inputName)) {
+				//raise an error if the name has already existed
+				throw new AssertionError("Error: The name has existed already, Please change another name");
 			}
 		}
-		return count;
+		this.name  = inputName;
+		nameList.add(inputName);
+		LinkedList<Movie> list =  new LinkedList<Movie>();
+		this.watchList = list;
 	}
 	
-	/**
-	 * Retrieves the list of all publishing studios, without duplicates, but including studios of invalid movies.
-	 * 
-	 * @return a set of studios
-	 */
-	public Set<String> getStudios() {
-		Set<String> studios = new HashSet<>();
-		for (Movie movie : aList) {
-			studios.add(movie.getStudio());
+	//Getter and Setter for the name
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String newName) {
+		for(String name : nameList) {
+			if(name.equals(newName)) {
+				//raise an error if the name has already existed
+				throw new AssertionError("Error: The name has existed already, Please change another name");
+			}
 		}
-		return studios;
+		nameList.remove(this.name);
+		this.name = newName;
+		nameList.add(newName);
+	}
+
+	//Do not need copy here, since if the Client change the movie globally, 
+	//the movie in the watch list should be changed simultaneously
+	public void add(Movie toWatch) {
+		for(Movie m : this.watchList) {
+			if(m.ifSame(toWatch)) {
+				//raise an error if the movie with same information has already in the watch list
+				throw new AssertionError("Error: The movie has already in the list");
+			}
+		}
+		this.watchList.add(toWatch);
 	}
 	
-	/**
-	 * Retrieves the list of all languages, without duplicates, but including languages of invalid movies.
-	 * 
-	 * @return a set of languages
-	 */
-	public Set<String> getLanguages() {
-		Set<String> languages = new HashSet<>();
-		for (Movie movie : aList) {
-			languages.add(movie.getLanguage());
+	public void watchOne() {
+		Movie m = this.watchList.getFirst();
+		//raise an error if the movie to play is not valid
+		if(m.getValidity().equals(Status.Valid)) {
+			this.watchList.removeFirst();
 		}
-		return languages;
+		else {
+			throw new AssertionError("Error: The movie you want to watch cannot be found");
+		}
+	}
+	
+	/*
+	 * Make a copy, so the client only able to access the information, but not to the reference
+	 * The client will not be able to change the info of movie by a watch list
+	 */
+	public ArrayList<Movie> accessAll(){
+		ArrayList<Movie> all = new ArrayList<Movie>();
+		for(Movie m : this.watchList) {
+			Movie copy = new Movie(m);
+			all.add(copy);
+		}
+		return all;
+	}
+	
+	public int validMovies() {
+		int num = 0;
+		for(Movie m : this.watchList) {
+			if(m.getValidity().equals(Status.Valid)) {
+				num ++;
+			}
+		}
+		return num;
+	}
+	
+	public ArrayList<String> allStudios() {
+		ArrayList<String> list = new ArrayList<String>();
+		for(Movie m : this.watchList) {
+			String s = m.getStudio();
+			if(!list.contains(s)) {
+				list.add(s);
+			}
+		}
+		return list;
+	}
+	
+	public ArrayList<String> allLanguages() {
+		ArrayList<String> list = new ArrayList<String>();
+		for(Movie m : this.watchList) {
+			String l = m.getLanguage();
+			if(!list.contains(l)) {
+				list.add(l);
+			}
+		}
+		return list;
 	}
 }
+	
