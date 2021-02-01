@@ -3,7 +3,7 @@ import java.util.HashMap;
 
 public class Movie{
 	
-	final private String path;
+	final private File path;
 	final private Formats format;
 	private Status status;
 	
@@ -17,9 +17,9 @@ public class Movie{
 	 */
 	private HashMap<String, String> custom;
 	
-	public Movie(String inputPath, String inputTitle, String inputLanguage, String inputStudio) {
+	public Movie(File inputPath, String inputTitle, String inputLanguage, String inputStudio) {
 		//check if the input file with acceptable formats
-		String inputFormat = inputPath.substring(inputPath.lastIndexOf(".") + 1);
+		String inputFormat = inputPath.getPath().substring(inputPath.getPath().lastIndexOf(".") + 1);
 		switch (inputFormat.toUpperCase()) {
 			case "MP4":
 				this.format = Formats.MP4;
@@ -45,8 +45,7 @@ public class Movie{
 		}
 		this.path = inputPath;
 		//check if the file exists or not
-		File f = new File(inputPath);
-		if(f.exists()) {
+		if(inputPath.exists()) {
 			this.status = Status.Valid;
 		}
 		else {
@@ -77,8 +76,7 @@ public class Movie{
 	
 	//Update the status of the movie, to check if the file exists or not
 	public void updateStatus() {
-		File f = new File(this.path);
-		if(f.exists()) {
+		if(this.path.exists()) {
 			this.status = Status.Valid;
 		}
 		else {
@@ -96,7 +94,11 @@ public class Movie{
 	}
 	
 	//Getters for the fields
+	public String getPath() {
+		return this.path.getPath();
+	}
 	public Status getValidity() {
+		this.updateStatus();
 		return this.status;
 	}
 	public Formats getFormat() {
@@ -113,6 +115,9 @@ public class Movie{
 		return this.studio;
 	}
 	//Methods for modify the custom information
+	public String getInfo(String key) {
+		return this.custom.get(key);
+	}
 	public void addPair(String key, String value) {
 		this.custom.put(key, value);
 	}

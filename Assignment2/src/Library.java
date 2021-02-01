@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Library {
 	/*
@@ -8,8 +9,9 @@ public class Library {
 	static private ArrayList<String> nameList = new ArrayList<String>();;
 	private String name;
 	//A library can store movies and watch lists
-	private ArrayList<Movie> movies;
-	private ArrayList<WatchList> watchLists;
+	//Using HashMap and using Path and Name as key to avoid the duplicates in Library
+	private HashMap<String, Movie> movies;
+	private HashMap<String, WatchList> watchLists;
 	
 	public Library(String inputName) {
 		//check if the name has already been used
@@ -21,8 +23,8 @@ public class Library {
 		}
 		this.name = inputName;
 		nameList.add(inputName);
-		this.movies = new ArrayList<Movie>();
-		this.watchLists = new ArrayList<WatchList>();
+		this.movies = new HashMap<String, Movie>();
+		this.watchLists = new HashMap<String, WatchList>();
 	}
 	
 	/*
@@ -30,14 +32,7 @@ public class Library {
 	 * the information in the library should be changed as well.
 	 */
 	public void addMovie(Movie m) {
-		//avoid the same Movie(same information but not reference) added into a library
-		for(Movie movie : this.movies) {
-			if(movie.ifSame(m)) {
-				//raise an error if the movie with same info has already existed
-				throw new AssertionError("The movie has already in the library");
-			}
-		}
-		this.movies.add(m);
+		this.movies.put(m.getPath(), m);
 	}
 	
 	/*
@@ -45,15 +40,15 @@ public class Library {
 	 * but not the same name, so we don't have to check the duplicates
 	 */
 	public void addList(WatchList w) {
-		this.watchLists.add(w);
+		this.watchLists.put(w.getName(), w);
 	}
 	
 	public void removeMovie(Movie m) {
-		this.movies.remove(m);
+		this.movies.remove(m.getPath());
 	}
 	
 	public void removeWatchList(WatchList w) {
-		this.watchLists.remove(w);
+		this.watchLists.remove(w.getName());
 	}
 
 	//Setter for name, need to check the duplicates as well

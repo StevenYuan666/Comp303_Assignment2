@@ -1,27 +1,34 @@
+import java.io.File;
 
 public class Client {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 		//Create several Movie objects
-		Movie french = new Movie("/Users/stevenyuan/Documents/dzx/birthday/french.mp4",
+		File fr = new File("/Users/stevenyuan/Documents/dzx/birthday/french.mp4");
+		Movie french = new Movie(fr,
 				"The wishes in French", "French", "Youtube");
 		//Try create Movie object with unacceptable format
 		try {
-			Movie error = new Movie("/Users/stevenyuan/Documents/dzx/birthday/french.mp3",
+			File er = new File("/Users/stevenyuan/Documents/dzx/birthday/french.mp3");
+			Movie error = new Movie(er,
 						"The wishes in French", "French", "Youtube");
 			error.getTitle();
 		}
 		catch (AssertionError e){
 			System.out.println("Successfully deal with the wrong format");
 		}
-		Movie japanese = new Movie("/Users/stevenyuan/Documents/dzx/birthday/japanese.mp4",
+		File ja = new File("/Users/stevenyuan/Documents/dzx/birthday/japanese.mp4");
+		Movie japanese = new Movie(ja,
 				"The wishes in Japanese", "Japanese", "Youtube");
-		Movie surprise = new Movie("/Users/stevenyuan/Documents/dzx/birthday/surprise.mp4",
+		File su = new File("/Users/stevenyuan/Documents/dzx/birthday/surprise.mp4");
+		Movie surprise = new Movie(su,
 				"Surprise", "Chinese", "Tencent");
-		Movie cut = new Movie("/Users/stevenyuan/Documents/dzx/birthday/love.mp4",
+		File cu = new File("/Users/stevenyuan/Documents/dzx/birthday/love.mp4");
+		Movie cut = new Movie(cu,
 				"Cut", "Chinese", "Youtube");
-		Movie finalCut = new Movie("/Users/stevenyuan/Documents/dzx/birthday/final.mp4",
+		File fi = new File("/Users/stevenyuan/Documents/dzx/birthday/final.mp4");
+		Movie finalCut = new Movie(fi,
 				"Final", "Chinese", "iMovie");
 		//Try create some WatchList object and some methods
 		WatchList loves = new WatchList("loves");
@@ -45,7 +52,8 @@ public class Client {
 		loves.setName("newLoves");
 		System.out.println(loves.getName());
 		System.out.println(loves.validMovies());
-		Movie invalid = new Movie("/lala.mp4", "invalid", "heyhey", "dutch");
+		File in = new File("/lala.mp4");
+		Movie invalid = new Movie(in, "invalid", "heyhey", "dutch");
 		loves.add(invalid);
 		System.out.println(loves.validMovies());
 		System.out.println(parts.allLanguages().toString());
@@ -70,7 +78,8 @@ public class Client {
 		test.addList(loves);
 		test.addList(parts);
 		test.addList(finalVersion);
-		Movie sameFrench = new Movie("/Users/stevenyuan/Documents/dzx/birthday/french.mp4",
+		File sa = new File("/Users/stevenyuan/Documents/dzx/birthday/french.mp4");
+		Movie sameFrench = new Movie(sa,
 				"The wishes in French", "French", "Youtube");
 		try {
 			loves.add(sameFrench);
