@@ -12,6 +12,8 @@ public class Library {
 	//Using HashMap and using Path and Name as key to avoid the duplicates in Library
 	private HashMap<String, Movie> movies;
 	private HashMap<String, WatchList> watchLists;
+	private HashMap<String, Episode> episodes;
+	private HashMap<String, TVShow> tvShows;
 	
 	public Library(String inputName) {
 		//check if the name has already been used
@@ -25,22 +27,24 @@ public class Library {
 		nameList.add(inputName);
 		this.movies = new HashMap<String, Movie>();
 		this.watchLists = new HashMap<String, WatchList>();
+		this.episodes = new HashMap<String, Episode>();
+		this.tvShows = new HashMap<String, TVShow>();
 	}
 	
-	/*
-	 * add the reference directly, since if the information of the movie changed,
-	 * the information in the library should be changed as well.
-	 */
 	public void addMovie(Movie m) {
 		this.movies.put(m.getPath(), m);
 	}
 	
-	/*
-	 * Since the name of watch list is unique, so there are only lists with same movies inside,
-	 * but not the same name, so we don't have to check the duplicates
-	 */
 	public void addList(WatchList w) {
 		this.watchLists.put(w.getName(), w);
+	}
+	
+	public void addEpisode(Episode e) {
+		this.episodes.put(e.getPath(), e);
+	}
+	
+	public void addTVShow(TVShow t) {
+		this.tvShows.put(t.getTitle(), t);
 	}
 	
 	public void removeMovie(Movie m) {
@@ -51,6 +55,14 @@ public class Library {
 		this.watchLists.remove(w.getName());
 	}
 
+	public void removeEpisode(Episode e) {
+		this.episodes.remove(e.getPath());
+	}
+	
+	public void removeTVShow(TVShow t) {
+		this.tvShows.remove(t.getTitle());
+	}
+	
 	//Setter for name, need to check the duplicates as well
 	public void setName(String newName) {
 		for(String n : nameList) {

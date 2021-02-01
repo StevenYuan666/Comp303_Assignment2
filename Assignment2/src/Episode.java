@@ -1,16 +1,14 @@
 import java.io.File;
 import java.util.HashMap;
 
-public class Movie implements Watchable, Sortable<Movie>{
-	
+public class Episode implements Watchable, Sortable<Episode>{
 	final private File path;
 	final private Formats format;
 	private Status status;
-	
+	private int sequentialNumber;
 	final private String title;
 	final private String language;
 	final private String studio;
-	private int sequel;
 	/*
 	 * Use HashMap to store the key-value pairs
 	 * Choose the type String, since String is general enough to store any information
@@ -18,7 +16,7 @@ public class Movie implements Watchable, Sortable<Movie>{
 	 */
 	private HashMap<String, String> custom;
 	
-	public Movie(File inputPath, String inputTitle, String inputLanguage, String inputStudio) {
+	public Episode(File inputPath, String inputTitle, String inputLanguage, String inputStudio) {
 		//check if the input file with acceptable formats
 		String inputFormat = inputPath.getPath().substring(inputPath.getPath().lastIndexOf(".") + 1);
 		switch (inputFormat.toUpperCase()) {
@@ -57,33 +55,30 @@ public class Movie implements Watchable, Sortable<Movie>{
 		this.language = inputLanguage;
 		this.studio = inputStudio;
 		this.custom = new HashMap<String, String>();
-		/* 
-		 * Initialize the sequel number from the input name
-		 * For example, if the input name is "Avengers2", the sequel number should be 2
-		 * If there is no sequel number in the name, it should be initialized as 1 by default
-		 * For example, if the input name is "Transformer", the sequel number should be 1
+		/*
+		 * Initialize the seqNum from the inputTitle, say "Singer Ep2", then the seqNum is 2
+		 * If there is no seqNum in the title, then the seqNum is set as 1 as default
 		 */
 		if(this.title.charAt(this.title.length() - 1) <= '9'
 				&& this.title.charAt(this.title.length() - 1) >= '1') {
-			this.sequel = (int) (this.title.charAt(this.title.length() - 1) - '0');
+			this.sequentialNumber = (int) (this.title.charAt(this.title.length() - 1) - '0');
 		}
-		this.sequel = 1;
+		this.sequentialNumber = 1;
 	}
 	
 	//to Deeply Copy a movie object
-	public Movie(Movie m) {
-		this.sequel = m.sequel;
-		this.path = m.path;
-		this.format = m.format;
-		this.status = m.status;
-		this.title = m.title;
-		this.language = m.language;
-		this.studio = m.studio;
-		this.custom = new HashMap<String, String>(m.custom);
+	public Episode(Episode e) {
+		this.sequentialNumber = e.sequentialNumber;
+		this.path = e.path;
+		this.format = e.format;
+		this.status = e.status;
+		this.title = e.title;
+		this.language = e.language;
+		this.studio = e.studio;
+		this.custom = new HashMap<String, String>(e.custom);
 	}
 	
 	//Easier for client to print out
-	@Override
 	public String toString() {
 		return this.title;
 	}
@@ -103,8 +98,8 @@ public class Movie implements Watchable, Sortable<Movie>{
 	 * Used in WatchList class and Library class
 	 * I assume that two Movies are same if they are refer to the same file
 	 */
-	public boolean ifSame(Movie m) {
-		return this.path.equals(m.path);
+	public boolean ifSame(Episode e) {
+		return this.path.equals(e.path);
 	}
 	
 	//Getters for the fields
@@ -146,20 +141,14 @@ public class Movie implements Watchable, Sortable<Movie>{
 	}
 
 	@Override
-	/*
-	 * Compare the movies in alphabetical order
-	 * If the name is same, compare the SeqNum
-	 * For example, Avengers2 is smaller than Zootopia
-	 * Transformer3 is bigger than Transformer1
-	 */
-	public int compareTo(Movie m) {
-		return this.title.compareToIgnoreCase(m.title);
+	
+	public int compareTo(Episode e) {
+		return this.title.compareToIgnoreCase(e.title);
 	}
 
 	@Override
 	public int getSeqNum() {
-		return this.sequel;
+		return 0;
 	}
 
-	
 }
