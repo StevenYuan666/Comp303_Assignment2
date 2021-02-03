@@ -1,5 +1,6 @@
 import java.io.File;
 import java.util.HashMap;
+import java.util.Optional;
 
 public class Episode implements Watchable, Sortable<Episode>{
 	final private File path;
@@ -9,6 +10,8 @@ public class Episode implements Watchable, Sortable<Episode>{
 	final private String title;
 	final private String language;
 	final private String studio;
+	private Optional<Episode> previous;
+	private Optional<Episode> next;
 	/*
 	 * Use HashMap to store the key-value pairs
 	 * Choose the type String, since String is general enough to store any information
@@ -16,7 +19,7 @@ public class Episode implements Watchable, Sortable<Episode>{
 	 */
 	private HashMap<String, String> custom;
 	
-	public Episode(File inputPath, String inputTitle, String inputLanguage, String inputStudio) {
+	public Episode(File inputPath, int inputSeq, String inputTitle, String inputLanguage, String inputStudio) {
 		//check if the input file with acceptable formats
 		String inputFormat = inputPath.getPath().substring(inputPath.getPath().lastIndexOf(".") + 1);
 		switch (inputFormat.toUpperCase()) {
@@ -55,15 +58,9 @@ public class Episode implements Watchable, Sortable<Episode>{
 		this.language = inputLanguage;
 		this.studio = inputStudio;
 		this.custom = new HashMap<String, String>();
-		/*
-		 * Initialize the seqNum from the inputTitle, say "Singer Ep2", then the seqNum is 2
-		 * If there is no seqNum in the title, then the seqNum is set as 1 as default
-		 */
-		if(this.title.charAt(this.title.length() - 1) <= '9'
-				&& this.title.charAt(this.title.length() - 1) >= '1') {
-			this.sequentialNumber = (int) (this.title.charAt(this.title.length() - 1) - '0');
-		}
-		this.sequentialNumber = 1;
+		this.sequentialNumber = inputSeq;
+		this.previous = Optional.empty();
+		this.next = Optional.empty();
 	}
 	
 	//to Deeply Copy a movie object
@@ -76,13 +73,40 @@ public class Episode implements Watchable, Sortable<Episode>{
 		this.language = e.language;
 		this.studio = e.studio;
 		this.custom = new HashMap<String, String>(e.custom);
+		this.previous = e.previous;
+		this.next = e.next;
+	}
+	
+	//Getters for the fields
+	public String getPath() {
+		return this.path.getPath();
+	}
+	public Formats getFormat() {
+		return this.format;
 	}
 	
 	//Easier for client to print out
+	@Override
 	public String toString() {
 		return this.title;
 	}
 	
+	//Methods for modify the custom information
+	public String getInfo(String key) {
+		return this.custom.get(key);
+	}
+	public void addPair(String key, String value) {
+		this.custom.put(key, value);
+	}
+	public void removePair(String key) {
+		this.custom.remove(key);
+	}
+	public void modifyPair(String key, String changed) {
+		this.custom.replace(key, changed);
+	}
+	
+	//Override methods in Watchable interface
+	@Override
 	//Update the status of the movie, to check if the file exists or not
 	public void updateStatus() {
 		if(this.path.exists()) {
@@ -92,26 +116,24 @@ public class Episode implements Watchable, Sortable<Episode>{
 			this.status = Status.Invalid;
 		}
 	}
-	
+	@Override
 	/*
 	 * Check if the two movies have same file, even though they are two object
 	 * Used in WatchList class and Library class
 	 * I assume that two Movies are same if they are refer to the same file
 	 */
-	public boolean ifSame(Episode e) {
-		return this.path.equals(e.path);
+	public boolean ifSame(Watchable e) {
+		if(!(e instanceof Episode)) {
+			return false;
+		}
+		Episode toCompare = (Episode) e;
+		return this.path.equals(toCompare.path);
 	}
 	
-	//Getters for the fields
-	public String getPath() {
-		return this.path.getPath();
-	}
+	@Override
 	public Status getValidity() {
 		this.updateStatus();
 		return this.status;
-	}
-	public Formats getFormat() {
-		return this.format;
 	}
 	//Getters for the required information
 	@Override
@@ -126,29 +148,40 @@ public class Episode implements Watchable, Sortable<Episode>{
 	public String getStudio() {
 		return this.studio;
 	}
-	//Methods for modify the custom information
-	public String getInfo(String key) {
-		return this.custom.get(key);
-	}
-	public void addPair(String key, String value) {
-		this.custom.put(key, value);
-	}
-	public void removePair(String key) {
-		this.custom.remove(key);
-	}
-	public void modifyPair(String key, String changed) {
-		this.custom.replace(key, changed);
-	}
-
 	@Override
+	public Watchable getCopy() {
+		return new Episode(this);
+	}
 	
-	public int compareTo(Episode e) {
-		return this.title.compareToIgnoreCase(e.title);
-	}
-
+	//Override methods of Sortable interface
 	@Override
-	public int getSeqNum() {
-		return 0;
+	public Episode getNext() {
+		//Throw out the NoSuchElement Error automatically, if the next is empty
+		return this.next.get();
 	}
-
+	@Override
+	public void setNext(Episode input) {
+		if(input != null) {
+			this.next = Optional.of(input);
+			input.setPrevious(this);
+		}
+		else {
+			this.next = Optional.empty();
+		}
+	}
+	@Override
+	public Episode getPrevious() {
+		//Throw out the NoSuchElement Error automatically, if the previous is empty
+		return this.previous.get();
+	}
+	@Override
+	public void setPrevious(Episode input) {
+		if(input != null) {
+			this.previous = Optional.of(input);
+			input.setNext(this);
+		}
+		else {
+			this.next = Optional.empty();
+		}
+	}
 }

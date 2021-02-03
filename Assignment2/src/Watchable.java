@@ -4,4 +4,9 @@ public interface Watchable {
 	public String getTitle();
 	public String getStudio();
 	public String getLanguage();
+	public Status getValidity();
+	public void updateStatus();
+	public boolean ifSame(Watchable m);
+	//Copy a same object as the one that called this method
+	public Watchable getCopy();
 }

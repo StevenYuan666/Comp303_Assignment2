@@ -2,9 +2,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-public class WatchList implements Bingeable<Movie>{
+public class WatchList implements Bingeable<Watchable>{
 	private String name;
-	private LinkedList<Movie> watchList;
+	private LinkedList<Watchable> watchList;
 	//to store the name has used, to avoid the duplicates
 	static private ArrayList<String> nameList = new ArrayList<String>();
 	
@@ -18,7 +18,7 @@ public class WatchList implements Bingeable<Movie>{
 		}
 		this.name  = inputName;
 		nameList.add(inputName);
-		LinkedList<Movie> list =  new LinkedList<Movie>();
+		LinkedList<Watchable> list =  new LinkedList<Watchable>();
 		this.watchList = list;
 	}
 	
@@ -39,11 +39,35 @@ public class WatchList implements Bingeable<Movie>{
 		nameList.add(newName);
 	}
 
+
+	public ArrayList<String> allStudios() {
+		ArrayList<String> list = new ArrayList<String>();
+		for(Watchable m : this.watchList) {
+			String s = m.getStudio();
+			if(!list.contains(s)) {
+				list.add(s);
+			}
+		}
+		return list;
+	}
+	
+	public ArrayList<String> allLanguages() {
+		ArrayList<String> list = new ArrayList<String>();
+		for(Watchable m : this.watchList) {
+			String l = m.getLanguage();
+			if(!list.contains(l)) {
+				list.add(l);
+			}
+		}
+		return list;
+	}
+	
+	//Override methods in Bingeable interface
 	//Do not need copy here, since if the Client change the movie globally, 
 	//the movie in the watch list should be changed simultaneously
 	@Override
-	public void add(Movie toWatch) {
-		for(Movie m : this.watchList) {
+	public void add(Watchable toWatch) {
+		for(Watchable m : this.watchList) {
 			if(m.ifSame(toWatch)) {
 				//raise an error if the movie with same information has already in the watch list
 				throw new AssertionError("Error: The movie has already in the list");
@@ -53,8 +77,8 @@ public class WatchList implements Bingeable<Movie>{
 	}
 	
 	@Override
-	public void watchOne() {
-		Movie m = this.watchList.getFirst();
+	public void playOne() {
+		Watchable m = this.watchList.getFirst();
 		//raise an error if the movie to play is not valid
 		if(m.getValidity().equals(Status.Valid)) {
 			this.watchList.removeFirst();
@@ -69,49 +93,28 @@ public class WatchList implements Bingeable<Movie>{
 	 * The client will not be able to change the info of movie by a watch list
 	 */
 	@Override
-	public ArrayList<Movie> accessAll(){
-		ArrayList<Movie> all = new ArrayList<Movie>();
-		for(Movie m : this.watchList) {
-			Movie copy = new Movie(m);
+	public ArrayList<Watchable> accessAll(){
+		ArrayList<Watchable> all = new ArrayList<Watchable>();
+		for(Watchable m : this.watchList) {
+			Watchable copy = m.getCopy();
 			all.add(copy);
 		}
 		return all;
 	}
 	
-	public int validMovies() {
+	@Override
+	public int valid() {
 		int num = 0;
-		for(Movie m : this.watchList) {
+		for(Watchable m : this.watchList) {
 			if(m.getValidity().equals(Status.Valid)) {
 				num ++;
 			}
 		}
 		return num;
 	}
-	
-	public ArrayList<String> allStudios() {
-		ArrayList<String> list = new ArrayList<String>();
-		for(Movie m : this.watchList) {
-			String s = m.getStudio();
-			if(!list.contains(s)) {
-				list.add(s);
-			}
-		}
-		return list;
-	}
-	
-	public ArrayList<String> allLanguages() {
-		ArrayList<String> list = new ArrayList<String>();
-		for(Movie m : this.watchList) {
-			String l = m.getLanguage();
-			if(!list.contains(l)) {
-				list.add(l);
-			}
-		}
-		return list;
-	}
 
 	@Override
-	public Iterator<Movie> iterator() {
+	public Iterator<Watchable> iterator() {
 		// TODO Auto-generated method stub
 		return this.watchList.iterator();
 	}

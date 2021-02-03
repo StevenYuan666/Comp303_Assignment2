@@ -1,15 +1,19 @@
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
-
+import java.util.Optional;
 
 //Almost same as WatchList
-public class TVShow implements Watchable, Bingeable<Episode>{
+//TVShow should be sortable as well, since a same TV show may have different seasons
+public class TVShow implements Watchable, Bingeable<Episode>, Sortable<TVShow>{
+	private Status validity;
 	private String title;
 	//Typically, each episodes for a TV show will have same language and studio
 	private String studio;
 	private String language;
 	private LinkedList<Episode> watchList;
+	private Optional<TVShow> next;
+	private Optional<TVShow> previous;
 	//to store the name has used, to avoid the duplicates
 	static private ArrayList<String> nameList = new ArrayList<String>();
 	
@@ -24,14 +28,30 @@ public class TVShow implements Watchable, Bingeable<Episode>{
 		this.title  = inputName;
 		nameList.add(inputName);
 		this.watchList = new LinkedList<Episode>();
+		//If all episodes in a TV show are invalid, then the TV show is invalid as well
+		this.validity = Status.Invalid;
+		for(Episode e : this.watchList) {
+			if(e.getValidity().equals(Status.Valid)) {
+				this.validity = Status.Valid;
+				break;
+			}
+		}
+	}
+	
+	//A constructor for deeply copy a TV show object
+	public TVShow(TVShow t) {
+		this.title  = t.title;
+		this.watchList = new LinkedList<Episode>();
+		for(Episode toAdd : t.watchList) {
+			Episode copy = new Episode(toAdd);
+			this.watchList.add(copy);
+		}
+		this.language = t.language;
+		this.studio = t.studio;
+		this.validity = t.validity;
 	}
 	
 	//Getter and Setter for the name
-	@Override
-	public String getTitle() {
-		return this.title;
-	}
-
 	public void setTitle(String newName) {
 		for(String name : nameList) {
 			if(name.equals(newName)) {
@@ -44,6 +64,7 @@ public class TVShow implements Watchable, Bingeable<Episode>{
 		nameList.add(newName);
 	}
 
+	//Override the methods in Bingeable interface
 	//Do not need copy here, since if the Client change the movie globally, 
 	//the movie in the watch list should be changed simultaneously
 	@Override
@@ -62,7 +83,7 @@ public class TVShow implements Watchable, Bingeable<Episode>{
 		}
 	}
 	@Override
-	public void watchOne() {
+	public void playOne() {
 		Episode e = this.watchList.getFirst();
 		//raise an error if the movie to play is not valid
 		if(e.getValidity().equals(Status.Valid)) {
@@ -73,14 +94,6 @@ public class TVShow implements Watchable, Bingeable<Episode>{
 		}
 	}
 	@Override
-	public String getStudio() {
-		return this.studio;
-	}
-	@Override
-	public String getLanguage() {
-		return this.language;
-	}
-	
 	/*
 	 * Make a copy, so the client only able to access the information, but not to the reference
 	 * The client will not be able to change the info of movie by a watch list
@@ -93,8 +106,8 @@ public class TVShow implements Watchable, Bingeable<Episode>{
 		}
 		return all;
 	}
-	
-	public int validEpisodes() {
+	@Override
+	public int valid() {
 		int num = 0;
 		for(Episode e : this.watchList) {
 			if(e.getValidity().equals(Status.Valid)) {
@@ -103,9 +116,99 @@ public class TVShow implements Watchable, Bingeable<Episode>{
 		}
 		return num;
 	}
-
 	@Override
 	public Iterator<Episode> iterator() {
 		return this.watchList.iterator();
+	}
+	
+	//Override the method in Watchable interface
+	@Override
+	public String getTitle() {
+		return this.title;
+	}
+	@Override
+	public String getStudio() {
+		return this.studio;
+	}
+	@Override
+	public String getLanguage() {
+		return this.language;
+	}
+	@Override
+	public Status getValidity() {
+		this.updateStatus();
+		return this.validity;
+	}
+	@Override
+	public void updateStatus() {
+		for(Episode e : this.watchList) {
+			if(e.getValidity().equals(Status.Valid)) {
+				this.validity = Status.Valid;
+				break;
+			}
+		}
+	}
+	@Override
+	//Two TV show are considered as same if they include same episodes
+	public boolean ifSame(Watchable m) {
+		if(!(m instanceof TVShow)) {
+			return false;
+		}
+		TVShow toCompare = (TVShow) m;
+		if(toCompare.watchList.size() != this.watchList.size()) {
+			return false;
+		}
+		for(Episode e : this.watchList) {
+			boolean exist = false;
+			for(Episode ee : toCompare.watchList) {
+				if(e.ifSame(ee)) {
+					exist = true;
+					break;
+				}
+			}
+			if(!exist) {
+				return false;
+			}
+		}
+		return true;
+	}
+	@Override
+	public Watchable getCopy() {
+		return new TVShow(this);
+	}
+
+	//Override the methods in Sortable interface
+	@Override
+	public TVShow getNext() {
+		//Throw out the NoSuchElement Error automatically, if the next is empty
+		return this.next.get();
+	}
+
+	@Override
+	public void setNext(TVShow input) {
+		if(input != null) {
+			this.next = Optional.of(input);
+			input.setPrevious(this);
+		}
+		else {
+			this.next = Optional.empty();
+		}
+	}
+
+	@Override
+	public TVShow getPrevious() {
+		//Throw out the NoSuchElement Error automatically, if the previous is empty
+		return this.previous.get();
+	}
+
+	@Override
+	public void setPrevious(TVShow input) {
+		if(input != null) {
+			this.previous = Optional.of(input);
+			input.setNext(this);
+		}
+		else {
+			this.next = Optional.empty();
+		}
 	}
 }

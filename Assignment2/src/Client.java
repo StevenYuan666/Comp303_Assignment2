@@ -51,11 +51,11 @@ public class Client {
 		System.out.println(loves.getName());
 		loves.setName("newLoves");
 		System.out.println(loves.getName());
-		System.out.println(loves.validMovies());
+		System.out.println(loves.valid());
 		File in = new File("/lala.mp4");
 		Movie invalid = new Movie(in, "invalid", "heyhey", "dutch");
 		loves.add(invalid);
-		System.out.println(loves.validMovies());
+		System.out.println(loves.valid());
 		System.out.println(parts.allLanguages().toString());
 		System.out.println(parts.allStudios().toString());
 		try {
@@ -66,7 +66,7 @@ public class Client {
 			System.out.println("Unable to create two watch list with same name");
 		}
 		System.out.println(loves.accessAll().toString());
-		loves.watchOne();
+		loves.playOne();
 		System.out.println(loves.accessAll().toString());
 		//Test the library
 		Library test = new Library("Library1");

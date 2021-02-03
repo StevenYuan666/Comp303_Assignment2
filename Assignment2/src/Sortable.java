@@ -1,5 +1,7 @@
 
-public interface Sortable<T> extends Comparable<T>{
-	//have this method to get sequential number of the object and to sort it in order
-	public int getSeqNum();
+public interface Sortable<T>{
+	public T getNext();
+	public void setNext(T input);
+	public T getPrevious();
+	public void setPrevious(T input);
 }
