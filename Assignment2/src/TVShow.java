@@ -51,8 +51,22 @@ public class TVShow implements Watchable, Bingeable<Episode>, Sortable<TVShow>{
 		this.language = t.language;
 		this.studio = t.studio;
 		this.validity = t.validity;
-		this.previous = t.previous;
-		this.next = t.next;
+		/*
+		 * The idea here is to make the constructor recursively, so that we will not 
+		 * lose the information if we call object.getNext().getNext()
+		 */
+		if(t.next.isEmpty()) {
+			this.next = Optional.empty();
+		}
+		else {
+			this.next = Optional.of(new TVShow(t.getNext()));
+		}
+		if(t.previous.isEmpty()) {
+			this.previous = Optional.empty();
+		}
+		else {
+			this.previous = Optional.of(new TVShow(t.getPrevious()));
+		}
 	}
 	
 	//Getter and Setter for the name

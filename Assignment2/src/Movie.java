@@ -72,8 +72,22 @@ public class Movie implements Watchable, Sortable<Movie>{
 		this.language = m.language;
 		this.studio = m.studio;
 		this.custom = new HashMap<String, String>(m.custom);
-		this.next = m.next;
-		this.previous = m.previous;
+		/*
+		 * The idea here is to make the constructor recursively, so that we will not 
+		 * lose the information if we call object.getNext().getNext()
+		 */
+		if(m.next.isEmpty()) {
+			this.next = Optional.empty();
+		}
+		else {
+			this.next = Optional.of(new Movie(m.getNext()));
+		}
+		if(m.previous.isEmpty()) {
+			this.previous = Optional.empty();
+		}
+		else {
+			this.previous = Optional.of(new Movie(m.getPrevious()));
+		}
 	}
 
 	//Getters for the fields

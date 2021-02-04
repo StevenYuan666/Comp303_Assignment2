@@ -1,6 +1,6 @@
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 
 public class Library {
 	/*
@@ -11,10 +11,10 @@ public class Library {
 	private String name;
 	//A library can store movies and watch lists
 	//Using HashMap and using Path and Name as key to avoid the duplicates in Library
-	private HashMap<String, Movie> movies;
-	private HashMap<String, WatchList> watchLists;
-	private HashMap<String, Episode> episodes;
-	private HashMap<String, TVShow> tvShows;
+	private HashSet<Movie> movies;
+	private HashSet<WatchList> watchLists;
+	private HashSet<Episode> episodes;
+	private HashSet<TVShow> tvShows;
 	
 	public Library(String inputName) {
 		//check if the name has already been used
@@ -26,42 +26,42 @@ public class Library {
 		}
 		this.name = inputName;
 		nameList.add(inputName);
-		this.movies = new HashMap<String, Movie>();
-		this.watchLists = new HashMap<String, WatchList>();
-		this.episodes = new HashMap<String, Episode>();
-		this.tvShows = new HashMap<String, TVShow>();
+		this.movies = new HashSet<Movie>();
+		this.watchLists = new HashSet<WatchList>();
+		this.episodes = new HashSet<Episode>();
+		this.tvShows = new HashSet<TVShow>();
 	}
 	
 	public void addMovie(Movie m) {
-		this.movies.put(m.getPath(), m);
+		this.movies.add(m);
 	}
 	
 	public void addList(WatchList w) {
-		this.watchLists.put(w.getName(), w);
+		this.watchLists.add(w);
 	}
 	
 	public void addEpisode(Episode e) {
-		this.episodes.put(e.getPath(), e);
+		this.episodes.add(e);
 	}
 	
 	public void addTVShow(TVShow t) {
-		this.tvShows.put(t.getTitle(), t);
+		this.tvShows.add(t);
 	}
 	
 	public void removeMovie(Movie m) {
-		this.movies.remove(m.getPath());
+		this.movies.remove(m);
 	}
 	
 	public void removeWatchList(WatchList w) {
-		this.watchLists.remove(w.getName());
+		this.watchLists.remove(w);
 	}
 
 	public void removeEpisode(Episode e) {
-		this.episodes.remove(e.getPath());
+		this.episodes.remove(e);
 	}
 	
 	public void removeTVShow(TVShow t) {
-		this.tvShows.remove(t.getTitle());
+		this.tvShows.remove(t);
 	}
 	
 	//Setter for name, need to check the duplicates as well
@@ -81,8 +81,25 @@ public class Library {
 		return name;
 	}
 	
+	public LinkedList<Watchable> getAll(){
+		LinkedList<Watchable> all = new LinkedList<Watchable>();
+		all.addAll(this.episodes);
+		all.addAll(this.movies);
+		all.addAll(this.tvShows);
+		return all;
+	}
+	
 	//Enable the clients to generate a Watch list by the algorithm they specified
-	public WatchList generateList(Generator strategy) {
-		
+	public WatchList generateList(String newListName, Generator g) {
+		WatchList generated = new WatchList(newListName);
+		LinkedList<Watchable> filtered = g.generate(this);
+		for(Watchable w : filtered) {
+			/*
+			 * Add the copy of each watchable object to the new 
+			 * Watchlist to avoid the reference leaking
+			 */
+			generated.add(w.getCopy());
+		}
+		return generated;
 	}
 }

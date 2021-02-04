@@ -73,8 +73,22 @@ public class Episode implements Watchable, Sortable<Episode>{
 		this.language = e.language;
 		this.studio = e.studio;
 		this.custom = new HashMap<String, String>(e.custom);
-		this.previous = e.previous;
-		this.next = e.next;
+		/*
+		 * The idea here is to make the constructor recursively, so that we will not 
+		 * lose the information if we call object.getNext().getNext()
+		 */
+		if(e.next.isEmpty()) {
+			this.next = Optional.empty();
+		}
+		else {
+			this.next = Optional.of(new Episode(e.getNext()));
+		}
+		if(e.previous.isEmpty()) {
+			this.previous = Optional.empty();
+		}
+		else {
+			this.previous = Optional.of(new Episode(e.getPrevious()));
+		}
 	}
 	
 	//Getters for the fields
