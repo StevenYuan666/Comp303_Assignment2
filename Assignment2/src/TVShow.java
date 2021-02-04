@@ -36,6 +36,8 @@ public class TVShow implements Watchable, Bingeable<Episode>, Sortable<TVShow>{
 				break;
 			}
 		}
+		this.previous = Optional.empty();
+		this.next = Optional.empty();
 	}
 	
 	//A constructor for deeply copy a TV show object
@@ -49,6 +51,8 @@ public class TVShow implements Watchable, Bingeable<Episode>, Sortable<TVShow>{
 		this.language = t.language;
 		this.studio = t.studio;
 		this.validity = t.validity;
+		this.previous = t.previous;
+		this.next = t.next;
 	}
 	
 	//Getter and Setter for the name
@@ -94,20 +98,7 @@ public class TVShow implements Watchable, Bingeable<Episode>, Sortable<TVShow>{
 		}
 	}
 	@Override
-	/*
-	 * Make a copy, so the client only able to access the information, but not to the reference
-	 * The client will not be able to change the info of movie by a watch list
-	 */
-	public ArrayList<Episode> accessAll(){
-		ArrayList<Episode> all = new ArrayList<Episode>();
-		for(Episode e : this.watchList) {
-			Episode copy = new Episode(e);
-			all.add(copy);
-		}
-		return all;
-	}
-	@Override
-	public int valid() {
+	public int validNum() {
 		int num = 0;
 		for(Episode e : this.watchList) {
 			if(e.getValidity().equals(Status.Valid)) {
@@ -116,10 +107,35 @@ public class TVShow implements Watchable, Bingeable<Episode>, Sortable<TVShow>{
 		}
 		return num;
 	}
+	//Enable the users to access all elements by iterator
 	@Override
 	public Iterator<Episode> iterator() {
-		return this.watchList.iterator();
+		return new MyIterator(this);
 	}
+	/*
+	 * Use a private class to implement the Iterator interface to avoid the reference leaking,
+	 * Right now, if the user use for each loop on a TVShow object, they can only access
+	 * the copy of each episode in the TV show, but not the reference directly
+	 */
+	private class MyIterator implements Iterator<Episode>{
+		private LinkedList<Episode> allEpisodes = new LinkedList<Episode>();
+		public MyIterator(TVShow show) {
+			for(Episode e : show.watchList) {
+				Episode copy = new Episode(e);
+				allEpisodes.add(copy);
+			}
+		}
+		@Override
+		public boolean hasNext() {
+			return this.allEpisodes.size() > 0;
+		}
+		@Override
+		public Episode next() {
+			return this.allEpisodes.remove();
+		}
+	}
+	
+	
 	
 	//Override the method in Watchable interface
 	@Override

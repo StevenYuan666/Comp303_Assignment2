@@ -88,22 +88,8 @@ public class WatchList implements Bingeable<Watchable>{
 		}
 	}
 	
-	/*
-	 * Make a copy, so the client only able to access the information, but not to the reference
-	 * The client will not be able to change the info of movie by a watch list
-	 */
 	@Override
-	public ArrayList<Watchable> accessAll(){
-		ArrayList<Watchable> all = new ArrayList<Watchable>();
-		for(Watchable m : this.watchList) {
-			Watchable copy = m.getCopy();
-			all.add(copy);
-		}
-		return all;
-	}
-	
-	@Override
-	public int valid() {
+	public int validNum() {
 		int num = 0;
 		for(Watchable m : this.watchList) {
 			if(m.getValidity().equals(Status.Valid)) {
@@ -115,8 +101,29 @@ public class WatchList implements Bingeable<Watchable>{
 
 	@Override
 	public Iterator<Watchable> iterator() {
-		// TODO Auto-generated method stub
-		return this.watchList.iterator();
+		return new MyIterator(this);
+	}
+	/*
+	 * Use a private class to implement the Iterator interface to avoid the reference leaking,
+	 * Right now, if the user use for each loop on a Watchlist object, they can only access
+	 * the copy of each watchable object in the watchlist, but not the reference directly
+	 */
+	private class MyIterator implements Iterator<Watchable>{
+		private LinkedList<Watchable> allWatchable = new LinkedList<Watchable>();
+		public MyIterator(WatchList list) {
+			for(Watchable e : list.watchList) {
+				Watchable copy = e.getCopy();
+				allWatchable.add(copy);
+			}
+		}
+		@Override
+		public boolean hasNext() {
+			return this.allWatchable.size() > 0;
+		}
+		@Override
+		public Watchable next() {
+			return this.allWatchable.removeFirst();
+		}
 	}
 }
 	

@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class Library {
@@ -78,5 +79,10 @@ public class Library {
 
 	public String getName() {
 		return name;
+	}
+	
+	//Enable the clients to generate a Watch list by the algorithm they specified
+	public WatchList generateList(Generator strategy) {
+		
 	}
 }

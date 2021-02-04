@@ -51,23 +51,24 @@ public class Client {
 		System.out.println(loves.getName());
 		loves.setName("newLoves");
 		System.out.println(loves.getName());
-		System.out.println(loves.valid());
+		System.out.println(loves.validNum());
 		File in = new File("/lala.mp4");
 		Movie invalid = new Movie(in, "invalid", "heyhey", "dutch");
 		loves.add(invalid);
-		System.out.println(loves.valid());
+		System.out.println(loves.validNum());
 		System.out.println(parts.allLanguages().toString());
 		System.out.println(parts.allStudios().toString());
 		try {
 			WatchList newLove = new WatchList("parts");
-			newLove.accessAll();
+			newLove.allLanguages();
 		}
 		catch (AssertionError e){
 			System.out.println("Unable to create two watch list with same name");
 		}
-		System.out.println(loves.accessAll().toString());
-		loves.playOne();
-		System.out.println(loves.accessAll().toString());
+		for(Watchable e : loves) {
+			System.out.print(e.getLanguage());
+		}
+		System.out.println("");
 		//Test the library
 		Library test = new Library("Library1");
 		test.addMovie(french);
