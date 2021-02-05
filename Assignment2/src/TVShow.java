@@ -3,7 +3,6 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Optional;
 
-//Almost same as WatchList
 //TVShow should be sortable as well, since a same TV show may have different seasons
 public class TVShow implements Watchable, Bingeable<Episode>, Sortable<TVShow>{
 	private Status validity;
@@ -36,6 +35,7 @@ public class TVShow implements Watchable, Bingeable<Episode>, Sortable<TVShow>{
 				break;
 			}
 		}
+		//Set the previous and next as null, but use Optional here to avoid the null Pointer
 		this.previous = Optional.empty();
 		this.next = Optional.empty();
 	}
@@ -51,22 +51,13 @@ public class TVShow implements Watchable, Bingeable<Episode>, Sortable<TVShow>{
 		this.language = t.language;
 		this.studio = t.studio;
 		this.validity = t.validity;
-		/*
-		 * The idea here is to make the constructor recursively, so that we will not 
-		 * lose the information if we call object.getNext().getNext()
-		 */
-		if(t.next.isEmpty()) {
-			this.next = Optional.empty();
-		}
-		else {
-			this.next = Optional.of(new TVShow(t.getNext()));
-		}
-		if(t.previous.isEmpty()) {
-			this.previous = Optional.empty();
-		}
-		else {
-			this.previous = Optional.of(new TVShow(t.getPrevious()));
-		}
+		this.previous = t.previous;
+		this.next = t.next;
+	}
+	
+	@Override
+	public String toString() {
+		return this.title;
 	}
 	
 	//Getter and Setter for the name
@@ -111,7 +102,7 @@ public class TVShow implements Watchable, Bingeable<Episode>, Sortable<TVShow>{
 			throw new AssertionError("Error: The movie you want to watch cannot be found");
 		}
 	}
-	@Override
+	
 	public int validNum() {
 		int num = 0;
 		for(Episode e : this.watchList) {
@@ -218,7 +209,6 @@ public class TVShow implements Watchable, Bingeable<Episode>, Sortable<TVShow>{
 	public void setNext(TVShow input) {
 		if(input != null) {
 			this.next = Optional.of(input);
-			input.setPrevious(this);
 		}
 		else {
 			this.next = Optional.empty();
@@ -235,7 +225,6 @@ public class TVShow implements Watchable, Bingeable<Episode>, Sortable<TVShow>{
 	public void setPrevious(TVShow input) {
 		if(input != null) {
 			this.previous = Optional.of(input);
-			input.setNext(this);
 		}
 		else {
 			this.next = Optional.empty();

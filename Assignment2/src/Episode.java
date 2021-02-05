@@ -59,6 +59,7 @@ public class Episode implements Watchable, Sortable<Episode>{
 		this.studio = inputStudio;
 		this.custom = new HashMap<String, String>();
 		this.sequentialNumber = inputSeq;
+		//Set the previous and next as null, but use Optional here to avoid the null Pointer
 		this.previous = Optional.empty();
 		this.next = Optional.empty();
 	}
@@ -73,22 +74,8 @@ public class Episode implements Watchable, Sortable<Episode>{
 		this.language = e.language;
 		this.studio = e.studio;
 		this.custom = new HashMap<String, String>(e.custom);
-		/*
-		 * The idea here is to make the constructor recursively, so that we will not 
-		 * lose the information if we call object.getNext().getNext()
-		 */
-		if(e.next.isEmpty()) {
-			this.next = Optional.empty();
-		}
-		else {
-			this.next = Optional.of(new Episode(e.getNext()));
-		}
-		if(e.previous.isEmpty()) {
-			this.previous = Optional.empty();
-		}
-		else {
-			this.previous = Optional.of(new Episode(e.getPrevious()));
-		}
+		this.next = e.next;
+		this.previous = e.previous;
 	}
 	
 	//Getters for the fields
@@ -177,7 +164,6 @@ public class Episode implements Watchable, Sortable<Episode>{
 	public void setNext(Episode input) {
 		if(input != null) {
 			this.next = Optional.of(input);
-			input.setPrevious(this);
 		}
 		else {
 			this.next = Optional.empty();
@@ -192,7 +178,6 @@ public class Episode implements Watchable, Sortable<Episode>{
 	public void setPrevious(Episode input) {
 		if(input != null) {
 			this.previous = Optional.of(input);
-			input.setNext(this);
 		}
 		else {
 			this.next = Optional.empty();

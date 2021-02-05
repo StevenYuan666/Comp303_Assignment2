@@ -1,4 +1,4 @@
-
+//Implement the Generator to filter by Studio
 import java.util.LinkedList;
 
 public class ByStudio implements Generator{
@@ -11,9 +11,8 @@ public class ByStudio implements Generator{
 	}
 
 	@Override
-	public LinkedList<Watchable> generate(Library lib) {
-		LinkedList<Watchable> all = lib.getAll();
-		for(Watchable w : all) {
+	public LinkedList<Watchable> generate(LinkedList<Watchable> allElements) {
+		for(Watchable w : allElements) {
 			if(w.getStudio().equalsIgnoreCase(this.studio)) {
 				this.filtered.add(w);
 			}

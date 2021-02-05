@@ -1,5 +1,12 @@
 
-//目前这么写貌似不是很 separation of concerns，得再改
+/*
+ * Although some methods here may not make sense, we will need all of these method in WatchList
+ * to make the WatchList can contain any Watchable Objects
+ * Or if we do not abstract some of methods here, we have to use "instanceof" in WatchList, which 
+ * would be really inconvenient for future improving, like if we want to add a new Class Documentary
+ * which implements watchable interface, if we don't have folloing methods, we have to change the 
+ * WatchList Class again, which is not what we want.
+ */
 
 public interface Watchable {
 	//abstract some common method in the class which can be watched

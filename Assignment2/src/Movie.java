@@ -59,6 +59,7 @@ public class Movie implements Watchable, Sortable<Movie>{
 		this.language = inputLanguage;
 		this.studio = inputStudio;
 		this.custom = new HashMap<String, String>();
+		//Set the previous and next as null, but use Optional here to avoid the null Pointer
 		this.previous = Optional.empty();
 		this.next = Optional.empty();
 	}
@@ -72,22 +73,8 @@ public class Movie implements Watchable, Sortable<Movie>{
 		this.language = m.language;
 		this.studio = m.studio;
 		this.custom = new HashMap<String, String>(m.custom);
-		/*
-		 * The idea here is to make the constructor recursively, so that we will not 
-		 * lose the information if we call object.getNext().getNext()
-		 */
-		if(m.next.isEmpty()) {
-			this.next = Optional.empty();
-		}
-		else {
-			this.next = Optional.of(new Movie(m.getNext()));
-		}
-		if(m.previous.isEmpty()) {
-			this.previous = Optional.empty();
-		}
-		else {
-			this.previous = Optional.of(new Movie(m.getPrevious()));
-		}
+		this.previous = m.previous;
+		this.next = m.next;
 	}
 
 	//Getters for the fields
@@ -174,7 +161,6 @@ public class Movie implements Watchable, Sortable<Movie>{
 	public void setNext(Movie input) {
 		if(input != null) {
 			this.next = Optional.of(input);
-			input.setPrevious(this);
 		}
 		else {
 			this.next = Optional.empty();
@@ -189,7 +175,6 @@ public class Movie implements Watchable, Sortable<Movie>{
 	public void setPrevious(Movie input) {
 		if(input != null) {
 			this.previous = Optional.of(input);
-			input.setNext(this);
 		}
 		else {
 			this.next = Optional.empty();

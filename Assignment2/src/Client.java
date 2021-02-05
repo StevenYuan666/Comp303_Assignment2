@@ -1,3 +1,5 @@
+//This is the client code from A1, which is not required for this Assignment
+//But this class will show some basic use of Movie, WatchList and Library.
 import java.io.File;
 
 public class Client {

@@ -22,6 +22,11 @@ public class WatchList implements Bingeable<Watchable>{
 		this.watchList = list;
 	}
 	
+	@Override
+	public String toString() {
+		return this.watchList.toString();
+	}
+	
 	//Getter and Setter for the name
 	public String getName() {
 		return name;
@@ -88,7 +93,6 @@ public class WatchList implements Bingeable<Watchable>{
 		}
 	}
 	
-	@Override
 	public int validNum() {
 		int num = 0;
 		for(Watchable m : this.watchList) {

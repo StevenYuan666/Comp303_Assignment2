@@ -1,4 +1,4 @@
-
+//Implement the Generator to filter by Language
 import java.util.LinkedList;
 
 public class ByLanguage implements Generator{
@@ -11,9 +11,8 @@ public class ByLanguage implements Generator{
 	}
 
 	@Override
-	public LinkedList<Watchable> generate(Library lib) {
-		LinkedList<Watchable> all = lib.getAll();
-		for(Watchable w : all) {
+	public LinkedList<Watchable> generate(LinkedList<Watchable> allElements) {
+		for(Watchable w : allElements) {
 			if(w.getLanguage().equalsIgnoreCase(this.language)) {
 				this.filtered.add(w);
 			}

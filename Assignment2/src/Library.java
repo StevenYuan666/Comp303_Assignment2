@@ -32,6 +32,7 @@ public class Library {
 		this.tvShows = new HashSet<TVShow>();
 	}
 	
+	//Several add and remove methods for each type of objects
 	public void addMovie(Movie m) {
 		this.movies.add(m);
 	}
@@ -81,18 +82,14 @@ public class Library {
 		return name;
 	}
 	
-	public LinkedList<Watchable> getAll(){
+	//Enable the clients to generate a Watch list by the algorithm they specified
+	public WatchList generateList(String newListName, Generator g) {
+		WatchList generated = new WatchList(newListName);
 		LinkedList<Watchable> all = new LinkedList<Watchable>();
 		all.addAll(this.episodes);
 		all.addAll(this.movies);
 		all.addAll(this.tvShows);
-		return all;
-	}
-	
-	//Enable the clients to generate a Watch list by the algorithm they specified
-	public WatchList generateList(String newListName, Generator g) {
-		WatchList generated = new WatchList(newListName);
-		LinkedList<Watchable> filtered = g.generate(this);
+		LinkedList<Watchable> filtered = g.generate(all);
 		for(Watchable w : filtered) {
 			/*
 			 * Add the copy of each watchable object to the new 

@@ -1,3 +1,4 @@
+//Implement the Generator to make a watch list with the input number
 import java.util.LinkedList;
 
 public class ByRandomNum implements Generator{
@@ -10,11 +11,12 @@ public class ByRandomNum implements Generator{
 	}
 
 	@Override
-	public LinkedList<Watchable> generate(Library lib) {
-		LinkedList<Watchable> all = lib.getAll();
+	public LinkedList<Watchable> generate(LinkedList<Watchable> allElements) {
 		while(this.filtered.size() < this.num) {
-			int index = (int) Math.random() * (all.size() - 1);
-			this.filtered.add(all.get(index));
+			int index = (int) (Math.random() * (allElements.size() - 1));
+			if(!this.filtered.contains(allElements.get(index))) {
+				this.filtered.add(allElements.get(index));
+			}
 		}
 		return this.filtered;
 	}
